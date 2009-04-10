@@ -4,12 +4,13 @@ scriptencoding utf-8
 " DOCUMENT {{{1
 "==================================================
 " Name: nextfile
-" Version: 0.0.0
+" Version: 0.0.1
 " Author:  tyru <tyru.exe+vim@gmail.com>
-" Last Change: 2009-04-09.
+" Last Change: 2009-04-10.
 "
 " Change Log: {{{2
-"   1.0.0: Initial upload.
+"   0.0.0: Initial upload.
+"   0.0.1: add g:nf_ignore_dir
 " }}}2
 "
 "
@@ -39,6 +40,9 @@ scriptencoding utf-8
 "       g:nf_loop_files (default: 0)
 "           loop when reached the end.
 "
+"       g:nf_ignore_dir (default: 1)
+"           ignore directory
+"
 "
 "==================================================
 " }}}1
@@ -67,6 +71,9 @@ if ! exists('g:nf_open_command')
 endif
 if ! exists('g:nf_loop_files')
     let g:nf_loop_files = 0
+endif
+if ! exists('g:nf_ignore_dir')
+    let g:nf_ignore_dir = 1
 endif
 " }}}1
 
@@ -108,6 +115,9 @@ func! s:OpenNextFile(advance)
         let files = s:GlobPath(expand('%:p:h'), '*')
         if g:nf_include_dotfiles
             let files += s:GlobPath(expand('%:p:h'), '.*')
+        endif
+        if g:nf_ignore_dir
+            call filter(files, '! isdirectory(v:val)')
         endif
 
         " get current file idx
